@@ -10,12 +10,14 @@ import {
 } from "@/components/ui/card";
 import { InputField } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { GoogleIcon } from "@/components/social-icons/icons";
 import { z } from "zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function AuthForm() {
+  const router = useRouter();
   const emailSchema = z.string().email("Invalid email address");
   const passwordSchema = z
     .string()
@@ -25,7 +27,7 @@ export function AuthForm() {
     .regex(/[A-Z]/, "Password must contain at least one capital letter")
     .regex(
       /[!@#$%^&*(),.?":{}|<>]/,
-      "Password must contain at least one special character",
+      "Password must contain at least one special character"
     );
   const [emailError, setEmailError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -40,7 +42,7 @@ export function AuthForm() {
   const handleValidationError = useCallback(
     (
       error: unknown,
-      setError: React.Dispatch<React.SetStateAction<string | null>>,
+      setError: React.Dispatch<React.SetStateAction<string | null>>
     ) => {
       if (error instanceof z.ZodError) {
         setError(error.errors[0].message);
@@ -52,7 +54,7 @@ export function AuthForm() {
         setError("An unknown error occurred");
       }
     },
-    [],
+    []
   );
 
   const validateEmail = useCallback(
@@ -64,7 +66,7 @@ export function AuthForm() {
         handleValidationError(error, setEmailError);
       }
     },
-    [handleValidationError],
+    [handleValidationError]
   );
 
   const validatePassword = useCallback(
@@ -81,23 +83,27 @@ export function AuthForm() {
         handleValidationError(error, setPasswordError);
       }
     },
-    [confirmPassword, isRegistering, handleValidationError],
+    [confirmPassword, isRegistering, handleValidationError]
   );
 
   const validateConfirmPassword = useCallback(
     (value: string) => {
       setConfirmPasswordError(
-        value !== password ? "Passwords do not match" : null,
+        value !== password ? "Passwords do not match" : null
       );
     },
-    [password],
+    [password]
   );
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isRegistering) {
       console.log("Registering user:", email, password, confirmPassword);
+      router.push("/dashboard");
+      localStorage.setItem("loginStatus", "true");
     } else {
       console.log("Signing in user:", email, password);
+      router.push("/dashboard");
+      localStorage.setItem("loginStatus", "true");
     }
   };
 

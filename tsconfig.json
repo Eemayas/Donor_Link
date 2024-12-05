@@ -27,7 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/api/sendEmailsss/route.js",
+    "app/api/sendEmergencyMail/route.js",
     "app/mail/page.jsx"
   ],
   "exclude": ["node_modules"]

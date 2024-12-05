@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -27,23 +27,28 @@ export const navLinks = [
     id: "map",
     title: "Map",
   },
-  {
-    id: "search",
-    title: "Search",
-  },
+
   {
     id: "profile",
     title: "Profile",
-  },
-  {
-    id: "about-us",
-    title: "About Us",
   },
 ];
 
 const Navbar = () => {
   const [active, setActive] = useState("");
   const [toggle, setToggle] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const loginStatus = localStorage.getItem("loginStatus");
+    setIsLoggedIn(loginStatus === "true");
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.setItem("loginStatus", "false");
+    setIsLoggedIn(false);
+  };
+
   return (
     <nav
       className={`${styles.paddingX} fixed top-0 z-20 flex w-full items-center border-b-2 border-gray-300 bg-white/30 py-5 opacity-80 backdrop-blur-md`}
@@ -84,6 +89,25 @@ const Navbar = () => {
               );
             })}
           </ul>
+
+          {/* Login/Logout Button */}
+          <div className="flex items-center">
+            {isLoggedIn ? (
+              <button
+                onClick={handleLogout}
+                className="text-foreground transition-colors hover:text-foreground/80 cursor-pointer"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                href="/auth"
+                className="text-foreground transition-colors hover:text-foreground/80 cursor-pointer"
+              >
+                Login
+              </Link>
+            )}
+          </div>
 
           <div className="flex flex-1 items-center justify-end md:hidden">
             <DropdownMenu onOpenChange={(open) => setToggle(open)}>

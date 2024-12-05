@@ -1,24 +1,32 @@
 /** @format */
 
 "use client";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function Contact() {
-  async function handleSubmit(event) {
-    event.preventDefault();
-    const formData = new FormData(event.target);
+  async function handleSubmit() {
     try {
-      const response = await fetch("/api/sendEmail", {
-        method: "post",
-        body: formData,
-      });
+      // Construct the URL with query parameters
+      const url = new URL("/api/your-endpoint", window.location.origin);
+      url.searchParams.append("recipientName", "John Doe");
+      url.searchParams.append("patientName", "Jane Smith");
+      url.searchParams.append("bloodGroup", "O+");
+      url.searchParams.append("hospitalName", "City General Hospital");
+      url.searchParams.append("location", "Downtown, New York");
+      url.searchParams.append("contactDetails", "+1-555-555-5555");
 
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
-      const responseData = await response.json();
-      console.log(responseData["message"]);
-      alert("Message successfully sent");
+      // Use fetch to call the API
+      fetch(url, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data); // Handle the response data
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     } catch (err) {
       console.error("Submission error:", err);
       alert(`Error: ${err.message || "Please try again later"}`);
@@ -31,45 +39,7 @@ export default function Contact() {
         <Link href="/">Home</Link>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
-      >
-        <div className="mb-4 flex flex-col w-500">
-          <label htmlFor="form-name">Name </label>
-          <input
-            id="form-name"
-            autoComplete="name"
-            maxLength={50}
-            // size="lg"
-            name="name"
-            className="text-black"
-          />
-
-          <label htmlFor="form-email"> Email:</label>
-          <input
-            id="form-email"
-            required
-            autoComplete="email"
-            maxLength={80}
-            name="email"
-            type="email"
-            className="text-black"
-          />
-
-          <label htmlFor="form-message"> Message: </label>
-          <textarea
-            id="form-message"
-            required
-            name="message"
-            rows={5}
-            className="text-black"
-          />
-        </div>
-        <button className=" rounded bg-sky-400" type="submit">
-          Send
-        </button>
-      </form>
+      <Button onClick={handleSubmit}>Submit</Button>
     </main>
   );
 }
