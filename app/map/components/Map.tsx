@@ -36,32 +36,54 @@ const cityCoordinates: Record<string, LatLngExpression> = {
 
 // Send email function
 const sendEmail = (email: string, subject: string, body: string): void => {
-  fetch("/api/sendEmergencyMail", {
+  const requestBody = {
+    recipientName: "John Doe",
+    patientName: "Jane Doe",
+    bloodGroup: "O+",
+    hospitalName: "City Hospital",
+    location: "123 Main St",
+    contactDetails: "123-456-7890",
+    sentTo: ["prashantmanandhar2002@gmail.com"],
+  };
+
+  fetch("http://localhost:3000/api/sendEmergencyMail", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      to: email,
-      subject: subject,
-      body: body,
-    }),
+    body: JSON.stringify(requestBody),
   })
-    .then((response) => {
-      if (response.ok) {
-        alert("Email sent successfully!");
-      } else {
-        alert("Failed to send email.");
-      }
-    })
-    .catch((error) => {
-      console.error("Error sending email:", error);
-    });
+    .then((response) => response.json())
+    .then((data) => console.log(data))
+    .catch((error) => console.error("Error:", error));
+  // fetch("/api/sendEmergencyMail", {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify({
+  //     to: email,
+  //     subject: subject,
+  //     body: body,
+  //   }),
+  // })
+  //   .then((response) => {
+  //     if (response.ok) {
+  //       alert("Email sent successfully!");
+  //     } else {
+  //       alert("Failed to send email.");
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     console.error("Error sending email:", error);
+  //   });
 };
 
 const Map: React.FC = () => {
   const [data, setData] = useState<Person[]>(userData);
-  var [userLocation, setUserLocation] = useState<LatLngExpression | null>([0,0]);
+  var [userLocation, setUserLocation] = useState<LatLngExpression | null>([
+    0, 0,
+  ]);
 
   // Fetch data from the public folder
   useEffect(() => {
@@ -92,7 +114,7 @@ const Map: React.FC = () => {
       console.error("Geolocation is not supported by this browser.");
     }
   }, []);
-  userLocation=[27.6253, 85.5561]
+  userLocation = [27.6253, 85.5561];
   // Red Marker Style for other locations
   const redIcon = new L.Icon({
     iconUrl: "/images/image.png",
@@ -125,7 +147,7 @@ const Map: React.FC = () => {
   const filteredData = userLocation
     ? data.filter((person) => {
         const personCoordinates = cityCoordinates[person.location];
-        if (personCoordinates) {
+        if (personCoordinates && userLocation) {
           const distance = getDistance(userLocation, personCoordinates);
           return distance <= 60000; // Only include data within 60 km
         }
