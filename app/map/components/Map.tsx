@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L, { LatLngExpression } from "leaflet";
+import { userData } from "../constant.js";
 
 // Fix Leaflet's default marker icon issue
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -59,21 +60,21 @@ const sendEmail = (email: string, subject: string, body: string): void => {
 };
 
 const Map: React.FC = () => {
-  const [data, setData] = useState<Person[]>([]);
+  const [data, setData] = useState<Person[]>(userData);
   const [userLocation, setUserLocation] = useState<LatLngExpression | null>(
     null
   );
 
   // Fetch data from the public folder
   useEffect(() => {
-    fetch("/dummy_data.json")
-      .then((response) => response.json())
-      .then((jsonData: Person[]) => {
-        setData(jsonData);
-      })
-      .catch((error) => {
-        console.error("Error loading the data:", error);
-      });
+    // fetch("/dummy_data.json")
+    //   .then((response) => response.json())
+    //   .then((jsonData: Person[]) => {
+    //     setData(jsonData);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error loading the data:", error);
+    //   });
 
     // Get the user's current location
     if (navigator.geolocation) {

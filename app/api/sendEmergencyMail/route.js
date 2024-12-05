@@ -9,42 +9,42 @@ import {
 
 export async function GET(req) {
   try {
-    const emailContent = await generateBloodDonationRequestEmail({
-      recipientName: "John Doe",
-      patientName: "Jane Smith",
-      bloodGroup: "O+",
-      hospitalName: "City General Hospital",
-      location: "Downtown, New York",
-      contactDetails: "+1-555-555-5555",
-    });
-
-    console.log(emailContent.subject); // Logs the subject
-    console.log(emailContent.body); // Logs the email body
-
-    await sendEmail(emailContent, ["prashantmanandhar2002@gmail.com"]);
-
-    // const {
-    //   recipientName,
-    //   patientName,
-    //   bloodGroup,
-    //   hospitalName,
-    //   location,
-    //   contactDetails,
-    // } = req.nextUrl.searchParams;
-
     // const emailContent = await generateBloodDonationRequestEmail({
-    //   recipientName,
-    //   patientName,
-    //   bloodGroup,
-    //   hospitalName,
-    //   location,
-    //   contactDetails,
+    //   recipientName: "John Doe",
+    //   patientName: "Jane Smith",
+    //   bloodGroup: "O+",
+    //   hospitalName: "City General Hospital",
+    //   location: "Downtown, New York",
+    //   contactDetails: "+1-555-555-5555",
     // });
 
     // console.log(emailContent.subject); // Logs the subject
     // console.log(emailContent.body); // Logs the email body
 
     // await sendEmail(emailContent, ["prashantmanandhar2002@gmail.com"]);
+
+    const {
+      recipientName,
+      patientName,
+      bloodGroup,
+      hospitalName,
+      location,
+      contactDetails,
+    } = req.nextUrl.searchParams;
+
+    const emailContent = await generateBloodDonationRequestEmail({
+      recipientName,
+      patientName,
+      bloodGroup,
+      hospitalName,
+      location,
+      contactDetails,
+    });
+
+    console.log(emailContent.subject); // Logs the subject
+    console.log(emailContent.body); // Logs the email body
+
+    await sendEmail(emailContent, ["prashantmanandhar2002@gmail.com"]);
 
     // const emailData = await generateBloodInventoryRequestEmail({
     //   recipientName: "John Doe",
