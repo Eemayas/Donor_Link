@@ -1,28 +1,13 @@
 /** @format */
 import { NextResponse, NextRequest } from "next/server";
-
 import {
   generateBloodDonationRequestEmail,
   generateBloodInventoryRequestEmail,
   sendEmail,
 } from "@/lib/nodemailer";
-
-export async function GET(req) {
+export async function POST(req) {
   try {
-    // const emailContent = await generateBloodDonationRequestEmail({
-    //   recipientName: "John Doe",
-    //   patientName: "Jane Smith",
-    //   bloodGroup: "O+",
-    //   hospitalName: "City General Hospital",
-    //   location: "Downtown, New York",
-    //   contactDetails: "+1-555-555-5555",
-    // });
-
-    // console.log(emailContent.subject); // Logs the subject
-    // console.log(emailContent.body); // Logs the email body
-
-    // await sendEmail(emailContent, ["prashantmanandhar2002@gmail.com"]);
-
+    const body = await req.json();
     const {
       recipientName,
       patientName,
@@ -30,7 +15,17 @@ export async function GET(req) {
       hospitalName,
       location,
       contactDetails,
-    } = req.nextUrl.searchParams;
+      sentTo,
+    } = body;
+
+    console.log({
+      recipientName,
+      patientName,
+      bloodGroup,
+      hospitalName,
+      location,
+      contactDetails,
+    });
 
     const emailContent = await generateBloodDonationRequestEmail({
       recipientName,
@@ -44,22 +39,9 @@ export async function GET(req) {
     console.log(emailContent.subject); // Logs the subject
     console.log(emailContent.body); // Logs the email body
 
-    await sendEmail(emailContent, ["prashantmanandhar2002@gmail.com"]);
+    await sendEmail(emailContent, sentTo);
 
-    // const emailData = await generateBloodInventoryRequestEmail({
-    //   recipientName: "John Doe",
-    //   organizationName: "City Blood Bank",
-    //   bloodGroup: "B+",
-    //   location: "123 Main Street, New York",
-    //   contactDetails: "+1-555-123-4567",
-    // });
-
-    // console.log(emailData.subject); // Logs the subject
-    // console.log(emailData.body); // Logs the email body
-
-    // await sendEmail(emailData, ["prashantmanandhar2002@gmail.com"]);
-
-    return NextResponse.json({ hello: "hello" } || {});
+    return NextResponse.json({ message: "Email sent successfully" });
   } catch (error) {
     console.log(error);
     return NextResponse.json(

@@ -7,26 +7,26 @@ import Link from "next/link";
 export default function Contact() {
   async function handleSubmit() {
     try {
-      // Construct the URL with query parameters
-      const url = new URL("/api/your-endpoint", window.location.origin);
-      url.searchParams.append("recipientName", "John Doe");
-      url.searchParams.append("patientName", "Jane Smith");
-      url.searchParams.append("bloodGroup", "O+");
-      url.searchParams.append("hospitalName", "City General Hospital");
-      url.searchParams.append("location", "Downtown, New York");
-      url.searchParams.append("contactDetails", "+1-555-555-5555");
+      const requestBody = {
+        recipientName: "John Doe",
+        patientName: "Jane Doe",
+        bloodGroup: "O+",
+        hospitalName: "City Hospital",
+        location: "123 Main St",
+        contactDetails: "123-456-7890",
+        sentTo: ["prashantmanandhar2002@gmail.com"],
+      };
 
-      // Use fetch to call the API
-      fetch(url, {
-        method: "GET",
+      fetch("http://localhost:3000/api/sendEmergencyMail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
       })
         .then((response) => response.json())
-        .then((data) => {
-          console.log(data); // Handle the response data
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+        .then((data) => console.log(data))
+        .catch((error) => console.error("Error:", error));
     } catch (err) {
       console.error("Submission error:", err);
       alert(`Error: ${err.message || "Please try again later"}`);
