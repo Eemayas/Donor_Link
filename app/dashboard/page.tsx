@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as GoogleChart } from "react-google-charts";
+import { useRouter } from "next/navigation";
 import {
   Chart,
   BarElement,
@@ -48,7 +49,7 @@ Chart.register(
   PieController,
   ArcElement,
   BarController,
-  LineController,
+  LineController
 );
 
 interface BloodTypeDistribution {
@@ -314,14 +315,7 @@ const DemandPredictionForm = () => {
   const [months, setMonths] = useState<string>(""); // Change to string
   const [yearsError, setYearsError] = useState<string>("");
   const [monthsError, setMonthsError] = useState<string>("");
-
-
-  const options = {
-    title: "Line Chart Example",
-    hAxis: { title: "Time" },
-    vAxis: { title: "Popularity" },
-    legend: "none",
-  };
+  const router = useRouter(); // Hook for navigation
   // Validate years input
   const validateYears = (value: string) => {
     const numericValue = parseInt(value);
@@ -385,16 +379,22 @@ const DemandPredictionForm = () => {
     console.log({ prediction });
   }, [prediction, months]);
 
-    // Process the data
-    const chartData =[["number","pred"] ,...months
-    .split(",")
-    .map(Number)
-    .map((data, index) => ([
-      index + 1,
-      data,
-    ]))];
+  // Process the data
+  const chartData =[["Month","Blood Requirements"] ,...months
+  .split(",")
+  .map(Number)
+  .map((data, index) => ([
+    index + 1,
+    data,
+  ]))];
 
-  console.log(chartData);
+//define the options for google chart data
+  const options = {
+    title: "Demand Prediction",
+    hAxis: { title: "Month" },
+    vAxis: { title: "Quantity of blood" },
+    legend: "none",
+  };
   return (
     <>
       {" "}
@@ -452,30 +452,60 @@ const DemandPredictionForm = () => {
         </button>
       </form>
       {isSubmitting && !prediction ? <p>Loading........</p> : ""}
-      <ResponsiveContainer width="100%" height="700px">
-        <AreaChart
-          data={months
-            .split(",")
-            .map(Number)
-            .map((data, number) => {
-              return {
-                month: number + 1,
-                accidents: data,
+      {months && (
+        <>
+          < GoogleChart
+  chartType="LineChart"
+  width="100%"
+  height="400px"
+  data={chartData}
+  options={options}
+/>
+
+          <div key={months.length}>Predicted Demand: {prediction}</div>
+          <Button
+            onClick={async () => {
+              const requestData = {
+                recipientName: "John Doe",
+                organizationName: "City Blood Bank",
+                bloodGroup: "B+",
+                location: "123 Main Street, New York",
+                contactDetails: "+1-555-123-4567",
+                recipientEmail: ["prashantmanandhar2002@gmail.com"],
               };
-            })}
-        >
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tp />
-          <Area
-            type="monotone"
-            dataKey="accidents"
-            stroke="#8884d8"
-            fill="#8884d8"
-            fillOpacity={0.3}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+
+              try {
+                const response = await fetch(
+                  "http://localhost:3000/api/send-blood-inventory-email",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(requestData),
+                  }
+                );
+
+                const data = await response.json();
+                if (response.ok) {
+                  console.log("Email sent successfully!");
+                  router.push("/demandmap")
+                } else {
+                  console.log(`Error: ${data.message}`);
+                }
+              } catch (error) {
+                if (error instanceof Error) {
+                  console.log(`Request failed: ${error.message}`);
+                } else {
+                  console.log("Request failed with an unknown error");
+                }
+              }
+            }}
+          >
+            Send Request Mail to {Math.ceil(prediction * 2)}{" "}
+          </Button>
+        </>
+      )}
     </>
   );
 };
@@ -608,7 +638,7 @@ const SupplyPredictionForm = () => {
         </button>
       </form>
       {isSubmitting && !prediction ? <p>Loading........</p> : ""}
-      {prediction && (
+      {months && (
         <>
           {`[${months
             .split(",")
