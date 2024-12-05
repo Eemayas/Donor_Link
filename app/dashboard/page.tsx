@@ -252,16 +252,16 @@ export default function Dashboard() {
         </select>
       </div>
 
-      <div className="flex flex-wrap gap-6">
-        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] w-96 flex flex-col">
-          <Highlight className="text-black dark:text-white w-full mx-auto">
+      <div className="flex flex-wrap gap-11">
+        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] w-96 flex flex-col gap-6">
+          <Highlight className="text-black dark:text-white w-full mx-auto text-center ">
             Blood Type Distribution (Population)
           </Highlight>
-          <canvas id="populationChart"></canvas>
+          <canvas id="populationChart" className="max-h-full"></canvas>
         </div>
 
-        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px]">
-          <Highlight className="text-black dark:text-white w-full mx-auto">
+        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px] flex flex-col gap-6">
+          <Highlight className="text-black dark:text-white w-full mx-auto text-center ">
             Accident Distribution
           </Highlight>
           <ResponsiveContainer width="100%" height="100%">
@@ -280,22 +280,22 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px]">
-          <Highlight className="text-black dark:text-white w-full mx-auto">
+        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px] flex flex-col gap-6">
+          <Highlight className="text-black dark:text-white w-full mx-auto text-center ">
             Blood Type Distribution (Month)
           </Highlight>
           {data && <Pie data={data} options={pieChartOptions} />}
         </div>
 
-        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px]">
-          <Highlight className="text-black dark:text-white text-xl">
+        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px] flex flex-col gap-6">
+          <Highlight className="text-black dark:text-white w-full mx-auto text-center ">
             Blood Demand Prediction
           </Highlight>
           <DemandPredictionForm />
         </div>
 
-        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px]">
-          <Highlight className="text-black dark:text-white text-xl">
+        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px] flex flex-col gap-6">
+          <Highlight className="text-black dark:text-white w-full mx-auto text-center ">
             Blood Supply Prediction
           </Highlight>
           <SupplyPredictionForm />
@@ -306,7 +306,8 @@ export default function Dashboard() {
 }
 
 const DemandPredictionForm = () => {
-  const [prediction, setPrediction] = useState<number>(0); // Change to string
+  const [prediction, setPrediction] = useState<number | null>(); // Change to string
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [years, setYears] = useState<string>(""); // Change to string
   const [months, setMonths] = useState<string>(""); // Change to string
   const [yearsError, setYearsError] = useState<string>("");
@@ -338,6 +339,7 @@ const DemandPredictionForm = () => {
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>
   ): Promise<void> {
+    setIsSubmitting(true);
     event.preventDefault();
     console.log("Years:", years.split(","));
     console.log("Months:", months.split(","));
@@ -430,7 +432,31 @@ const DemandPredictionForm = () => {
           Submit
         </button>
       </form>
-      {prediction}
+      {isSubmitting && !prediction ? <p>Loading........</p> : ""}
+      <ResponsiveContainer width="100%" height="700px">
+        <AreaChart
+          data={months
+            .split(",")
+            .map(Number)
+            .map((data, number) => {
+              return {
+                month: number + 1,
+                accidents: data,
+              };
+            })}
+        >
+          <XAxis dataKey="month" />
+          <YAxis />
+          <Tp />
+          <Area
+            type="monotone"
+            dataKey="accidents"
+            stroke="#8884d8"
+            fill="#8884d8"
+            fillOpacity={0.3}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
     </>
   );
 };
