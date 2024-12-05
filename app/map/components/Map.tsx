@@ -224,31 +224,30 @@ const Map: React.FC<MapProps> = ({searchQuery}) => {
           position && (
             <Marker key={person.id} position={position} icon={redIcon}>
               <Popup>
-                <Card className="w-full h-full">
-                  <div className="flex items-center gap-1">
-                    <User className="w-4 h-4" />
-                    <span>
-                      {" "}
-                      {person.first_name} {person.last_name}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Droplet className="w-4 h-4" />
-                    <span>{person.blood_group}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <MapPin className="w-4 h-4" />
-                    <span>{person.location}</span>
-                  </div>
-                  <Button onClick={sendEmail}>
-                  <div className="flex items-center gap-1" >
+              <Card className="w-full max-w-sm mx-auto bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out">
+      <div className="flex items-center gap-3 mb-4">
+        <User className="w-6 h-6 text-blue-500" />
+        <span className="text-lg font-semibold">{person.first_name} {person.last_name}</span>
+      </div>
 
-                    <Mail className="w-4 h-4" />
-                    
-                    <span>{person.email}</span>
-                  </div>
-                  </Button>
-                </Card>
+      <div className="flex items-center gap-3 mb-4">
+        <Droplet className="w-6 h-6 text-red-500" />
+        <span className="text-sm text-gray-700">{person.blood_group}</span>
+      </div>
+
+      <div className="flex items-center gap-3 mb-4">
+        <MapPin className="w-6 h-6 text-green-500" />
+        <span className="text-sm text-gray-700">{person.location}</span>
+      </div>
+
+      <Button
+        onClick={sendEmail}
+        className="w-full flex items-center justify-center gap-2 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors duration-300"
+      >
+        <Mail className="w-5 h-5" />
+        <span className="text-sm">Email: {person.email}</span>
+      </Button>
+    </Card>
               </Popup>
             </Marker>
           )
