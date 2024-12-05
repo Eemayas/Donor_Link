@@ -36,7 +36,7 @@ const cityCoordinates: Record<string, LatLngExpression> = {
 
 // Send email function
 const sendEmail = (email: string, subject: string, body: string): void => {
-  fetch("/api/sendEmail", {
+  fetch("/api/sendEmergencyMail", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -61,9 +61,7 @@ const sendEmail = (email: string, subject: string, body: string): void => {
 
 const Map: React.FC = () => {
   const [data, setData] = useState<Person[]>(userData);
-  const [userLocation, setUserLocation] = useState<LatLngExpression | null>(
-    null
-  );
+  var [userLocation, setUserLocation] = useState<LatLngExpression | null>([0,0]);
 
   // Fetch data from the public folder
   useEffect(() => {
@@ -94,10 +92,10 @@ const Map: React.FC = () => {
       console.error("Geolocation is not supported by this browser.");
     }
   }, []);
-
+  userLocation=[27.6253, 85.5561]
   // Red Marker Style for other locations
   const redIcon = new L.Icon({
-    iconUrl: "/image.png",
+    iconUrl: "/images/image.png",
     iconSize: [65, 40], // Size of the icon
     iconAnchor: [12, 41], // Anchor point of the icon (where the icon points to)
     popupAnchor: [1, -34], // Popup position when opened
@@ -174,7 +172,7 @@ const Map: React.FC = () => {
                   href="#"
                   onClick={() =>
                     sendEmail(
-                      person.email,
+                      "timalsinapari015@gmail.com",
                       "Blood Donation Request",
                       "Hi, do you have blood for donation?"
                     )

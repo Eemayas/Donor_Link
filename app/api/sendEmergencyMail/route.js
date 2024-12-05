@@ -44,7 +44,7 @@ export async function GET(req) {
     console.log(emailContent.subject); // Logs the subject
     console.log(emailContent.body); // Logs the email body
 
-    await sendEmail(emailContent, ["prashantmanandhar2002@gmail.com"]);
+    await sendEmail(emailContent, ["timalsinapari015@gmail.com"]);
 
     // const emailData = await generateBloodInventoryRequestEmail({
     //   recipientName: "John Doe",
