@@ -2,6 +2,7 @@
 "use client";
 import { FormEvent, useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
+import { Chart as GoogleChart } from "react-google-charts";
 import {
   Chart,
   BarElement,
@@ -46,7 +47,7 @@ Chart.register(
   PieController,
   ArcElement,
   BarController,
-  LineController
+  LineController,
 );
 
 interface BloodTypeDistribution {
@@ -313,6 +314,13 @@ const DemandPredictionForm = () => {
   const [yearsError, setYearsError] = useState<string>("");
   const [monthsError, setMonthsError] = useState<string>("");
 
+
+  const options = {
+    title: "Line Chart Example",
+    hAxis: { title: "Time" },
+    vAxis: { title: "Popularity" },
+    legend: "none",
+  };
   // Validate years input
   const validateYears = (value: string) => {
     const numericValue = parseInt(value);
@@ -376,6 +384,16 @@ const DemandPredictionForm = () => {
     console.log({ prediction });
   }, [prediction]);
 
+    // Process the data
+    const chartData =[["number","pred"] ,...months
+    .split(",")
+    .map(Number)
+    .map((data, index) => ([
+      index + 1,
+      data,
+    ]))];
+
+  console.log(chartData);
   return (
     <>
       {" "}
@@ -433,30 +451,16 @@ const DemandPredictionForm = () => {
         </button>
       </form>
       {isSubmitting && !prediction ? <p>Loading........</p> : ""}
-      <ResponsiveContainer width="100%" height="700px">
-        <AreaChart
-          data={months
-            .split(",")
-            .map(Number)
-            .map((data, number) => {
-              return {
-                month: number + 1,
-                accidents: data,
-              };
-            })}
-        >
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tp />
-          <Area
-            type="monotone"
-            dataKey="accidents"
-            stroke="#8884d8"
-            fill="#8884d8"
-            fillOpacity={0.3}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+      { months && (
+  < GoogleChart
+  chartType="LineChart"
+  width="100%"
+  height="400px"
+  data={chartData}
+  options={options}
+/>
+)}
+
     </>
   );
 };
