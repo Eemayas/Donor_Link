@@ -33,6 +33,7 @@ import { loactionData } from "./constant";
 import { HeroHighlight, Highlight } from "@/components/ui/hero-highlight";
 import { motion } from "framer-motion";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 // Register all necessary chart components
 Chart.register(
@@ -288,7 +289,7 @@ export default function Dashboard() {
           {data && <Pie data={data} options={pieChartOptions} />}
         </div>
 
-        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px] flex flex-col gap-6">
+        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px] w-fit flex flex-col gap-6">
           <Highlight className="text-black dark:text-white w-full mx-auto text-center ">
             Blood Demand Prediction
           </Highlight>
@@ -382,7 +383,7 @@ const DemandPredictionForm = () => {
 
   useEffect(() => {
     console.log({ prediction });
-  }, [prediction]);
+  }, [prediction, months]);
 
     // Process the data
     const chartData =[["number","pred"] ,...months
@@ -451,21 +452,37 @@ const DemandPredictionForm = () => {
         </button>
       </form>
       {isSubmitting && !prediction ? <p>Loading........</p> : ""}
-      { months && (
-  < GoogleChart
-  chartType="LineChart"
-  width="100%"
-  height="400px"
-  data={chartData}
-  options={options}
-/>
-)}
-
+      <ResponsiveContainer width="100%" height="700px">
+        <AreaChart
+          data={months
+            .split(",")
+            .map(Number)
+            .map((data, number) => {
+              return {
+                month: number + 1,
+                accidents: data,
+              };
+            })}
+        >
+          <XAxis dataKey="month" />
+          <YAxis />
+          <Tp />
+          <Area
+            type="monotone"
+            dataKey="accidents"
+            stroke="#8884d8"
+            fill="#8884d8"
+            fillOpacity={0.3}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
     </>
   );
 };
+
 const SupplyPredictionForm = () => {
-  const [prediction, setPrediction] = useState<number>(0); // Change to string
+  const [prediction, setPrediction] = useState<number | null>(); // Change to string
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [years, setYears] = useState<string>(""); // Change to string
   const [months, setMonths] = useState<string>(""); // Change to string
   const [yearsError, setYearsError] = useState<string>("");
@@ -497,6 +514,7 @@ const SupplyPredictionForm = () => {
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>
   ): Promise<void> {
+    setIsSubmitting(true);
     event.preventDefault();
     console.log("Years:", years.split(","));
     console.log("Months:", months.split(","));
@@ -531,7 +549,7 @@ const SupplyPredictionForm = () => {
 
   useEffect(() => {
     console.log({ prediction });
-  }, [prediction]);
+  }, [prediction, months]);
 
   return (
     <>
@@ -589,7 +607,188 @@ const SupplyPredictionForm = () => {
           Submit
         </button>
       </form>
-      {prediction}
+      {isSubmitting && !prediction ? <p>Loading........</p> : ""}
+      {prediction && (
+        <>
+          {`[${months
+            .split(",")
+            .map(Number)
+            .map((data, number) => {
+              return `${data}`;
+            })}
+          ]`}
+          <div key={months.length}>Predicted Supply: {prediction}</div>
+          {/* <Button
+            onClick={async () => {
+              const requestData = {
+                recipientName: "John Doe",
+                organizationName: "City Blood Bank",
+                bloodGroup: "B+",
+                location: "123 Main Street, New York",
+                contactDetails: "+1-555-123-4567",
+                recipientEmail: ["prashantmanandhar2002@gmail.com"],
+              };
+
+              try {
+                const response = await fetch(
+                  "http://localhost:3000/api/send-blood-inventory-email",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(requestData),
+                  }
+                );
+
+                const data = await response.json();
+                if (response.ok) {
+                  console.log("Email sent successfully!");
+                } else {
+                  console.log(`Error: ${data.message}`);
+                }
+              } catch (error) {
+                if (error instanceof Error) {
+                  console.log(`Request failed: ${error.message}`);
+                } else {
+                  console.log("Request failed with an unknown error");
+                }
+              }
+            }}
+          >
+            Send Request Mail to {Math.ceil(prediction * 2)}{" "}
+          </Button> */}
+        </>
+      )}
     </>
   );
 };
+// const SupplyPredictionForm = () => {
+//   const [prediction, setPrediction] = useState<number>(0); // Change to string
+//   const [years, setYears] = useState<string>(""); // Change to string
+//   const [months, setMonths] = useState<string>(""); // Change to string
+//   const [yearsError, setYearsError] = useState<string>("");
+//   const [monthsError, setMonthsError] = useState<string>("");
+
+//   // Validate years input
+//   const validateYears = (value: string) => {
+//     const numericValue = parseInt(value);
+//     if (isNaN(numericValue) || numericValue < 0) {
+//       setYearsError("Years cannot be negative.");
+//     } else {
+//       setYearsError("");
+//     }
+//   };
+
+//   // Handle years input change
+//   const handleYearsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const value = e.target.value;
+//     setYears(value);
+//     validateYears(value);
+//   };
+
+//   // Handle months input change
+//   const handleMonthsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const value = e.target.value;
+//     setMonths(value);
+//   };
+
+//   async function handleSubmit(
+//     event: FormEvent<HTMLFormElement>
+//   ): Promise<void> {
+//     event.preventDefault();
+//     console.log("Years:", years.split(","));
+//     console.log("Months:", months.split(","));
+
+//     try {
+//       const response = await fetch(
+//         "http://127.0.0.1:5000/predict_supply_values",
+//         {
+//           method: "POST", // Changed to 'POST' to include the body
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({
+//             yearly_supplies: years.split(",").map(Number),
+//             monthly_supplies: months.split(",").map(Number),
+//           }),
+//         }
+//       );
+
+//       if (!response.ok) {
+//         throw new Error(`Request failed with status ${response.status}`);
+//       }
+
+//       const result = await response.json();
+//       setPrediction(result["prediction"][0]);
+//       console.log({ result, flat: result["prediction"][0] });
+//       console.log("Prediction result:", result);
+//     } catch (error) {
+//       console.error("Error:", error);
+//     }
+//   }
+
+//   useEffect(() => {
+//     console.log({ prediction });
+//   }, [prediction]);
+
+//   return (
+//     <>
+//       {" "}
+//       <form
+//         className="space-y-4 max-w-sm mx-auto p-4 border rounded"
+//         onSubmit={handleSubmit}
+//       >
+//         <div className="grid gap-2">
+//           <label
+//             htmlFor="years"
+//             className="block text-sm font-medium text-gray-700"
+//           >
+//             Years
+//           </label>
+//           <input
+//             id="years"
+//             type="text"
+//             name="years"
+//             value={years}
+//             onChange={handleYearsChange}
+//             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
+//             placeholder="Enter years (e.g., 4)"
+//           />
+//           {yearsError && (
+//             <span className="text-red-500 text-sm">{yearsError}</span>
+//           )}
+//         </div>
+
+//         <div className="grid gap-2">
+//           <label
+//             htmlFor="months"
+//             className="block text-sm font-medium text-gray-700"
+//           >
+//             Months
+//           </label>
+//           <input
+//             id="months"
+//             type="text" // Change type to text to maintain string value
+//             name="months"
+//             value={months}
+//             onChange={handleMonthsChange}
+//             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
+//             placeholder="Enter months (e.g., 6)"
+//           />
+//           {monthsError && (
+//             <span className="text-red-500 text-sm">{monthsError}</span>
+//           )}
+//         </div>
+
+//         <button
+//           type="submit"
+//           className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+//         >
+//           Submit
+//         </button>
+//       </form>
+//       {prediction}
+//     </>
+//   );
+// };
