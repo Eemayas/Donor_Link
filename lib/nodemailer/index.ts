@@ -36,14 +36,14 @@ export async function generateEmailBody() {
 }
 
 const transporter = nodemailer.createTransport({
-  pool: true,
+  //   pool: true,
   service: "gmail",
-  port: 2525,
+  //   port: 2525,
   auth: {
     user: "code.camp.2024.blood.donation@gmail.com",
     pass: process.env.EMAIL_PASSWORD,
   },
-  maxConnections: 1,
+  //   maxConnections: 1,
 });
 
 export const sendEmail = async (
