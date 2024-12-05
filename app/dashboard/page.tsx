@@ -198,7 +198,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="p-8 ">
+    <div className="p-8 pt-28 ">
       <motion.h1
         initial={{
           opacity: 0,
@@ -212,12 +212,14 @@ export default function Dashboard() {
           duration: 0.5,
           ease: [0.4, 0.0, 0.2, 1],
         }}
-        className="text-2xl px-4 md:text-4xl lg:text-5xl font-bold text-neutral-700 dark:text-white max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto "
+        className="text-2xl px-4 md:text-4xl lg:text-5xl font-bold text-neutral-700 dark:text-white max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto flex flex-col items-center"
       >
-        Blood Donation Dashboard -
-        <Highlight className="text-black dark:text-white">
-          {selectedCity}
-        </Highlight>
+        Blood Donation Dashboard{" "}
+        <>
+          <Highlight className="text-black dark:text-white w-fit ">
+            {selectedCity}
+          </Highlight>
+        </>
       </motion.h1>
 
       <div className="flex mt-4 w-full mx-auto justify-center gap-6">
@@ -249,14 +251,14 @@ export default function Dashboard() {
         </select>
       </div>
 
-      <div className="flex flex-wrap gap-8 mt-11">
-        <div className="bg-white p-4 shadow-md rounded-md flex-1 gap-11 h-[500px]">
+      <div className="flex  gap-8 mt-11">
+        <div className="bg-white p-4 shadow-md rounded-md flex-1 gap-16 max-h-[500px]">
           <Highlight className="text-black dark:text-white w-full mx-auto ">
             Blood Type Distribution (Population)
           </Highlight>{" "}
           <canvas id="populationChart"></canvas>
         </div>
-        <div className="bg-white p-4 shadow-md rounded-md flex-1 h-[500px]">
+        <div className="bg-white p-4 shadow-md rounded-md flex-1 gap-16  max-h-[500px]">
           <Highlight className="text-black dark:text-white w-full mx-auto ">
             Accident Distribution
           </Highlight>{" "}
@@ -278,7 +280,7 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </>
         </div>
-        <div className="bg-white p-4 shadow-md rounded-md flex-1  h-[500px]">
+        <div className="bg-white p-4 shadow-md rounded-md flex-1 gap-16  max-h-[500px]">
           <Highlight className="text-black dark:text-white w-full mx-auto ">
             Blood Type Distribution (Month)
           </Highlight>{" "}

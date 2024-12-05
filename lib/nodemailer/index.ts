@@ -12,25 +12,84 @@ const Notification = {
   THRESHOLD_MET: "THRESHOLD_MET",
 };
 
-export async function generateEmailBody() {
-  let subject = "";
-  let body = "";
-
-  subject = `Welcome to Price Tracking for `;
-  body = `
-        <div>
-          <h2>Welcome to DarazScapper 🚀</h2>
-          <p>You are now tracking .</p>
-          <p>Here's an example of how you'll receive updates:</p>
-          <div style="border: 1px solid #ccc; padding: 10px; background-color: #f8f8f8;">
-            <h3> is back in stock!</h3>
-            <p>We're excited to let you know that  is now back in stock.</p>
-            <p>Don't miss out - <a href="$" target="_blank" rel="noopener noreferrer">buy it now</a>!</p>
-            <img src="https://i.ibb.co/pwFBRMC/Screenshot-2023-09-26-at-1-47-50-AM.png" alt="Product Image" style="max-width: 100%;" />
+export async function generateBloodDonationRequestEmail({
+  recipientName,
+  patientName,
+  bloodGroup,
+  hospitalName,
+  location,
+  contactDetails,
+}: {
+  recipientName: string;
+  patientName: string;
+  bloodGroup: string;
+  hospitalName: string;
+  location: string;
+  contactDetails: string;
+}) {
+  const subject = `Urgent Blood Donation Request for ${patientName} - ${bloodGroup} Needed`;
+  const body = `
+          <div>
+            <h2>Urgent Blood Donation Needed 🚨</h2>
+            <p>Dear ${recipientName},</p>
+            <p>We have an emergency case and are urgently in need of blood donations for:</p>
+            <div style="border: 1px solid #ccc; padding: 10px; background-color: #f8f8f8;">
+              <h3>Patient Details:</h3>
+              <ul>
+                <li><strong>Name:</strong> ${patientName}</li>
+                <li><strong>Blood Group:</strong> ${bloodGroup}</li>
+                <li><strong>Hospital:</strong> ${hospitalName}</li>
+                <li><strong>Location:</strong> ${location}</li>
+                <li><strong>Contact:</strong> ${contactDetails}</li>
+              </ul>
+            </div>
+            <p>If you or someone you know can help, please contact us immediately at ${contactDetails} or visit ${hospitalName} at the earliest.</p>
+            <p>Every drop counts. Your support can save a life today!</p>
+            <p style="margin-top: 20px;">Thank you for your kindness and generosity.</p>
+            <p style="margin-top: 10px;">Stay safe,</p>
+            <p>The Emergency Response Team</p>
           </div>
-          <p>Stay tuned for more updates on $ and other products you're tracking.</p>
-        </div>
-      `;
+        `;
+
+  return { subject, body };
+}
+
+export async function generateBloodInventoryRequestEmail({
+  recipientName,
+  organizationName,
+  bloodGroup,
+  location,
+  contactDetails,
+}: {
+  recipientName: string;
+  organizationName: string;
+  bloodGroup: string;
+  location: string;
+  contactDetails: string;
+}) {
+  const subject = `Critical Blood Donation Appeal from ${organizationName} - ${bloodGroup} Urgently Needed`;
+  const body = `
+          <div>
+            <h2>Critical Blood Donation Appeal 🚨</h2>
+            <p>Dear ${recipientName},</p>
+            <p>We are reaching out to you on behalf of <strong>${organizationName}</strong> due to a critical shortage of <strong>${bloodGroup}</strong> blood in our inventory.</p>
+            <div style="border: 1px solid #ccc; padding: 10px; background-color: #f8f8f8;">
+              <h3>Details:</h3>
+              <ul>
+                <li><strong>Blood Group Needed:</strong> ${bloodGroup}</li>
+                <li><strong>Organization:</strong> ${organizationName}</li>
+                <li><strong>Location:</strong> ${location}</li>
+                <li><strong>Contact:</strong> ${contactDetails}</li>
+              </ul>
+            </div>
+            <p>This shortage is impacting our ability to provide life-saving blood to patients in need. We are urging donors to help us replenish our inventory to meet the growing demand.</p>
+            <p>If you or someone you know can donate, please contact us at ${contactDetails} or visit our donation center at ${location}.</p>
+            <p>Your generosity could make a critical difference in saving lives.</p>
+            <p style="margin-top: 20px;">Thank you for your support.</p>
+            <p style="margin-top: 10px;">Sincerely,</p>
+            <p><strong>The ${organizationName} Team</strong></p>
+          </div>
+        `;
 
   return { subject, body };
 }
