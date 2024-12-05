@@ -25,6 +25,7 @@ export async function POST(req) {
       hospitalName,
       location,
       contactDetails,
+      sentTo,
     });
 
     const emailContent = await generateBloodDonationRequestEmail({

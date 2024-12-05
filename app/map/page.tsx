@@ -6,7 +6,7 @@ import Map from "./components/Map"; // Ensure you have a Map component in the sa
 
 const LocationPage = () => {
   return (
-    <div>
+    <div className="pt-32">
       <h1 style={{ textAlign: "center", margin: "20px 0" }}>
         Blood Donor Locations
       </h1>

@@ -1,10 +1,11 @@
 /** @format */
-
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L, { LatLngExpression } from "leaflet";
 import { userData } from "../constant.js";
+import { Droplet, MapPin, User } from "lucide-react";
 
 // Fix Leaflet's default marker icon issue
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -32,6 +33,27 @@ const cityCoordinates: Record<string, LatLngExpression> = {
   Lalitpur: [27.6644, 85.3188],
   Biratnagar: [26.4525, 87.2718],
   Bharatpur: [27.6766, 84.4322],
+  Bhaktapur: [27.671, 85.4298],
+  Birgunj: [27.0, 84.866],
+  Dharan: [26.8124, 87.2838],
+  Janakpur: [26.7288, 85.926],
+  Butwal: [27.7006, 83.4509],
+  Nepalgunj: [28.05, 81.6167],
+  Dhangadhi: [28.6885, 80.5976],
+  Hetauda: [27.4285, 85.0301],
+  Itahari: [26.6667, 87.2833],
+  Damak: [26.6588, 87.7025],
+  Tansen: [27.8687, 83.5442],
+  Ghorahi: [28.0419, 82.4882],
+  Tikapur: [28.5171, 81.1138],
+  Kalaiya: [27.0101, 84.8775],
+  Rajbiraj: [26.5378, 86.7332],
+  Siddharthanagar: [27.5058, 83.4578],
+  Bhadrapur: [26.5453, 88.0938],
+  Panauti: [27.5825, 85.5195],
+  Damauli: [27.9223, 84.1468],
+  Kawasoti: [27.6759, 84.2116],
+  Banepa: [27.6339, 85.5212],
 };
 
 // Send email function
@@ -149,11 +171,14 @@ const Map: React.FC = () => {
         const personCoordinates = cityCoordinates[person.location];
         if (personCoordinates && userLocation) {
           const distance = getDistance(userLocation, personCoordinates);
-          return distance <= 60000; // Only include data within 60 km
+          return distance <= 600000; // Only include data within 60 km
         }
         return false;
       })
     : [];
+  useEffect(() => {
+    console.log(filteredData);
+  }, [filteredData]);
 
   return (
     <MapContainer
@@ -177,31 +202,36 @@ const Map: React.FC = () => {
       )}
 
       {/* Add markers for filtered locations */}
-      {filteredData.map((person) => {
-        const position = cityCoordinates[person.location];
+      {filteredData.map((person, index) => {
+        const position: [number, number] = [
+          (cityCoordinates[person.location] as [number, number])[0] +
+            Math.random() , // Add a tiny random offset to avoid marker overlap
+          (cityCoordinates[person.location] as [number, number])[1] +
+            Math.random() ,
+        ];
+        console.log(position);
+
         return (
           position && (
             <Marker key={person.id} position={position} icon={redIcon}>
               <Popup>
-                <strong>
-                  {person.first_name} {person.last_name}
-                </strong>
-                <br />
-                Blood Group: {person.blood_group}
-                <br />
-                Email:{" "}
-                <a
-                  href="#"
-                  onClick={() =>
-                    sendEmail(
-                      "timalsinapari015@gmail.com",
-                      "Blood Donation Request",
-                      "Hi, do you have blood for donation?"
-                    )
-                  }
-                >
-                  {person.email}
-                </a>
+                <Card className="w-full h-full">
+                  <div className="flex items-center gap-1">
+                    <User className="w-4 h-4" />
+                    <span>
+                      {" "}
+                      {person.first_name} {person.last_name}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Droplet className="w-4 h-4" />
+                    <span>{person.blood_group}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <MapPin className="w-4 h-4" />
+                    <span>{person.location}</span>
+                  </div>
+                </Card>
               </Popup>
             </Marker>
           )
