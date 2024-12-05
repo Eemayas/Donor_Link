@@ -40,7 +40,7 @@ export const userData = [
     last_name: "Whapple",
     email: "awhapple3@princeton.edu",
     gender: "Male",
-    location: "LalitpurBharatpur",
+    location: "Lalitpur",
     age: 58,
     blood_group: "B+",
     is_safe_to_donate: true,
