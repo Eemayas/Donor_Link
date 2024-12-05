@@ -5,6 +5,16 @@ import numpy as np
 import keras
 import json
 
+from flask import Flask
+from flask_cors import CORS 
+
+app = Flask(__name__)
+CORS(app) 
+
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
+
 # paths
 models_path = Path(__file__).parents[0].joinpath("models")
 
@@ -113,7 +123,7 @@ def inverse_transform_supply_month_values(supplies):
 
     return [x * (max_val - min_val) + min_val for x in supplies]
 
-
+@app.route("/predict_demand_values", methods=["POST"])
 def predict_demand_values(yearly_demands, monthly_demands, n_yearly_demands=4, n_monthly_demands=6, batched=False):
     yearly_demands = np.array(transform_demand_year_values(yearly_demands))
     monthly_demands = np.array(transform_demand_month_values(monthly_demands))
@@ -123,6 +133,7 @@ def predict_demand_values(yearly_demands, monthly_demands, n_yearly_demands=4, n
     predictions =  demand_model.predict([yearly_demands, monthly_demands])
     return inverse_transform_demand_month_values(predictions)
 
+@app.route("/predict_demand_values", methods=["POST"])
 def predict_supply_values(yearly_supplies, monthly_supplies, n_yearly_supplies=4, n_monthly_supplies=6, batched=False):
     yearly_supplies = np.array(transform_supply_year_values(yearly_supplies))
     monthly_supplies = np.array(transform_supply_month_values(monthly_supplies))
