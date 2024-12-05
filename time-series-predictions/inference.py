@@ -181,7 +181,7 @@ def convert_to_serializable(obj):
     return obj  # Return as is if it's already serializable
 
 
-@app.route("/predict_demand_values", methods=["GET"])
+@app.route("/predict_demand_values", methods=["POST"])
 def api_predict_demand_values():
     try:
         # Get data from the request body (JSON)
@@ -222,7 +222,7 @@ def api_predict_demand_values():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/predict_supply_values", methods=["GET"])
+@app.route("/predict_supply_values", methods=["POST"])
 def api_predict_supply_values():
     try:
         # Get data from the request body (JSON)
@@ -263,11 +263,6 @@ def api_predict_supply_values():
         print(e)
         # Return error message if an exception occurs
         return jsonify({"error": str(e)}), 500
-
-
-@app.route("/s", methods=["POST"])
-def ss():
-    print("vsdvdsfv")
 
 
 if __name__ == "__main__":
