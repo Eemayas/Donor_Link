@@ -7,6 +7,7 @@ import json
 
 from flask import Flask
 from flask_cors import CORS 
+from requests import request
 
 app = Flask(__name__)
 CORS(app) 
@@ -123,7 +124,6 @@ def inverse_transform_supply_month_values(supplies):
 
     return [x * (max_val - min_val) + min_val for x in supplies]
 
-@app.route("/predict_demand_values", methods=["POST"])
 def predict_demand_values(yearly_demands, monthly_demands, n_yearly_demands=4, n_monthly_demands=6, batched=False):
     yearly_demands = np.array(transform_demand_year_values(yearly_demands))
     monthly_demands = np.array(transform_demand_month_values(monthly_demands))
@@ -133,7 +133,6 @@ def predict_demand_values(yearly_demands, monthly_demands, n_yearly_demands=4, n
     predictions =  demand_model.predict([yearly_demands, monthly_demands])
     return inverse_transform_demand_month_values(predictions)
 
-@app.route("/predict_demand_values", methods=["POST"])
 def predict_supply_values(yearly_supplies, monthly_supplies, n_yearly_supplies=4, n_monthly_supplies=6, batched=False):
     yearly_supplies = np.array(transform_supply_year_values(yearly_supplies))
     monthly_supplies = np.array(transform_supply_month_values(monthly_supplies))
@@ -143,11 +142,25 @@ def predict_supply_values(yearly_supplies, monthly_supplies, n_yearly_supplies=4
     predictions =  demand_model.predict([yearly_supplies, monthly_supplies])
     return inverse_transform_supply_month_values(predictions)
 
+@app.route("/predict_demand_values", methods=["POST"])
+def api_predict_demand_values():
+    yearly_demands = request.json.get("yearly_demands")
+    monthly_demands = request.json.get("monthly_demands")
+    return predict_demand_values(yearly_demands, monthly_demands)
+
+@app.route("/predict_supply_values", methods=["POST"])
+def api_predict_supply_values():
+    yearly_supplies = request.json.get("yearly_supplies")
+    monthly_supplies = request.json.get("monthly_supplies")
+    return predict_demand_values(yearly_supplies, monthly_supplies)
+
+
 if __name__=="__main__":
     load_demand_model()
     load_supply_model()
     load_demand_scaler_params()
     load_supply_scaler_params()
 
+    # Example
     print(predict_demand_values([1000, 2000, 3000, 2000], [100, 200, 150, 250, 188, 120]))
     print(predict_supply_values([2000, 1000, 2000, 3000], [150, 120, 130, 150, 188, 120]))
