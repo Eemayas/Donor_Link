@@ -65,13 +65,13 @@ const Navbar = () => {
           <Image
             alt="logo"
             className="border-black-100 border-1 rounded-full"
-            src={"/images/blood_donation.webp"}
-            width={50}
-            height={50}
+            src={"/images/Backlog.png"}
+            width={200}
+            height={10}
             loading="eager"
             priority
           />
-          <p className="cursor-pointer font-bold">Blood Management</p>
+         
         </Link>
         <div className="flex gap-4 lg:gap-6">
           <ul className="hidden list-none flex-row items-center gap-4 text-sm md:flex lg:gap-6">

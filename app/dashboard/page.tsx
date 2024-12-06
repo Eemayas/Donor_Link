@@ -2,6 +2,8 @@
 "use client";
 import { FormEvent, useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
+import { Chart as GoogleChart } from "react-google-charts";
+import { useRouter } from "next/navigation";
 import {
   Chart,
   BarElement,
@@ -313,7 +315,7 @@ const DemandPredictionForm = () => {
   const [months, setMonths] = useState<string>(""); // Change to string
   const [yearsError, setYearsError] = useState<string>("");
   const [monthsError, setMonthsError] = useState<string>("");
-
+  const router = useRouter(); // Hook for navigation
   // Validate years input
   const validateYears = (value: string) => {
     const numericValue = parseInt(value);
@@ -377,6 +379,22 @@ const DemandPredictionForm = () => {
     console.log({ prediction });
   }, [prediction, months]);
 
+  // Process the data
+  const chartData =[["Month","Blood Requirements"] ,...months
+  .split(",")
+  .map(Number)
+  .map((data, index) => ([
+    index + 1,
+    data,
+  ]))];
+
+//define the options for google chart data
+  const options = {
+    title: "Demand Prediction",
+    hAxis: { title: "Month" },
+    vAxis: { title: "Quantity of blood" },
+    legend: "none",
+  };
   return (
     <>
       {" "}
@@ -434,15 +452,16 @@ const DemandPredictionForm = () => {
         </button>
       </form>
       {isSubmitting && !prediction ? <p>Loading........</p> : ""}
-      {prediction && (
+      {months && (
         <>
-          {`[${months
-            .split(",")
-            .map(Number)
-            .map((data, number) => {
-              return `${data}`;
-            })}
-          ]`}
+          < GoogleChart
+  chartType="LineChart"
+  width="100%"
+  height="400px"
+  data={chartData}
+  options={options}
+/>
+
           <div key={months.length}>Predicted Demand: {prediction}</div>
           <Button
             onClick={async () => {
@@ -470,6 +489,7 @@ const DemandPredictionForm = () => {
                 const data = await response.json();
                 if (response.ok) {
                   console.log("Email sent successfully!");
+                  router.push("/demandmap")
                 } else {
                   console.log(`Error: ${data.message}`);
                 }
@@ -618,7 +638,7 @@ const SupplyPredictionForm = () => {
         </button>
       </form>
       {isSubmitting && !prediction ? <p>Loading........</p> : ""}
-      {prediction && (
+      {months && (
         <>
           {`[${months
             .split(",")

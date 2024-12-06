@@ -185,9 +185,9 @@ const Map: React.FC<MapProps> = ({searchQuery}) => {
 
         const personCoordinates = cityCoordinates[person.location];
   
-         if (personCoordinates && userLocation && searchQuery===person.blood_group) {
+         if (personCoordinates && userLocation ) {
           const distance = getDistance(userLocation, personCoordinates);
-          return distance <= 100000; // Only include data within 60 km
+          return distance <= 200000; // Only include data within 60 km
         }
 
         return false;
@@ -200,7 +200,7 @@ const Map: React.FC<MapProps> = ({searchQuery}) => {
   return (
     <MapContainer
       center={userLocation || [27.7172, 85.324]}
-      zoom={10}
+      zoom={9}
       style={{ height: "80vh", width: "100%" }}
     >
       {/* OpenStreetMap Tiles */}
