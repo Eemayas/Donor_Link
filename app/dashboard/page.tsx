@@ -256,14 +256,14 @@ export default function Dashboard() {
       </div>
 
       <div className="flex flex-wrap gap-11">
-        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] w-96 flex flex-col gap-6">
+        <div className="bg-white p-4 shadow-md rounded-md w-96 flex flex-col gap-6">
           <Highlight className="text-black dark:text-white w-full mx-auto text-center ">
             Blood Type Distribution (Population)
           </Highlight>
           <canvas id="populationChart" className="max-h-full"></canvas>
         </div>
 
-        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px] flex flex-col gap-6">
+        <div className="bg-white p-4 shadow-md rounded-md  min-w-[500px] flex flex-col gap-6">
           <Highlight className="text-black dark:text-white w-full mx-auto text-center ">
             Accident Distribution
           </Highlight>
@@ -283,7 +283,7 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px] flex flex-col gap-6">
+        <div className="bg-white p-4 shadow-md rounded-md min-w-[500px] flex flex-col gap-6">
           <Highlight className="text-black dark:text-white w-full mx-auto text-center ">
             Blood Type Distribution (Month)
           </Highlight>
@@ -309,13 +309,14 @@ export default function Dashboard() {
 }
 
 const DemandPredictionForm = () => {
-  const [prediction, setPrediction] = useState<number | null>(); // Change to string
+  const [prediction, setPrediction] = useState<string | null>(null); // Change to string
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [years, setYears] = useState<string>(""); // Change to string
   const [months, setMonths] = useState<string>(""); // Change to string
   const [yearsError, setYearsError] = useState<string>("");
   const [monthsError, setMonthsError] = useState<string>("");
   const router = useRouter(); // Hook for navigation
+
   // Validate years input
   const validateYears = (value: string) => {
     const numericValue = parseInt(value);
@@ -367,11 +368,13 @@ const DemandPredictionForm = () => {
       }
 
       const result = await response.json();
-      setPrediction(result["prediction"][0]);
+      setPrediction(result["prediction"][0].toString());
       console.log({ result, flat: result["prediction"][0] });
       console.log("Prediction result:", result);
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -380,13 +383,13 @@ const DemandPredictionForm = () => {
   }, [prediction, months]);
 
   // Process the data
-  const chartData = [
+  const [chartData, setChartData] = useState<any[]>([
     ["Month", "Blood Requirements"],
     ...months
       .split(",")
       .map(Number)
       .map((data, index) => [index + 1, data]),
-  ];
+  ]);
 
   //define the options for google chart data
   const options = {
@@ -395,9 +398,22 @@ const DemandPredictionForm = () => {
     vAxis: { title: "Quantity of blood" },
     legend: "none",
   };
+
+  useEffect(() => {
+    if (prediction) {
+      setChartData([
+        ["Month", "Blood Requirements"],
+        ...months
+          .split(",")
+          .map(Number)
+          .map((data, index) => [index + 1, data]),
+        [months.split(",").length + 1, parseFloat(prediction)],
+      ]);
+    }
+  }, [prediction]);
+
   return (
     <>
-      {" "}
       <form
         className="space-y-4 max-w-sm mx-auto p-4 border rounded"
         onSubmit={handleSubmit}
@@ -452,7 +468,7 @@ const DemandPredictionForm = () => {
         </button>
       </form>
       {isSubmitting && !prediction ? <p>Loading........</p> : ""}
-      {months && (
+      {prediction && (
         <>
           <GoogleChart
             chartType="LineChart"
@@ -505,7 +521,10 @@ const DemandPredictionForm = () => {
                 }}
               >
                 {prediction !== null && prediction !== undefined && (
-                  <>Send Request Mail to {Math.ceil(prediction * 2)} person</>
+                  <>
+                    Send Request Mail to {Math.ceil(parseFloat(prediction) * 2)}{" "}
+                    person
+                  </>
                 )}
               </Button>
             </>
@@ -515,14 +534,14 @@ const DemandPredictionForm = () => {
     </>
   );
 };
-
 const SupplyPredictionForm = () => {
-  const [prediction, setPrediction] = useState<number | null>(); // Change to string
+  const [prediction, setPrediction] = useState<string | null>(null); // Change to string
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [years, setYears] = useState<string>(""); // Change to string
   const [months, setMonths] = useState<string>(""); // Change to string
   const [yearsError, setYearsError] = useState<string>("");
   const [monthsError, setMonthsError] = useState<string>("");
+  const router = useRouter(); // Hook for navigation
 
   // Validate years input
   const validateYears = (value: string) => {
@@ -582,28 +601,42 @@ const SupplyPredictionForm = () => {
       console.error("Error:", error);
     }
   }
-
   useEffect(() => {
     console.log({ prediction });
   }, [prediction, months]);
 
-  const chartData = [
-    ["Month", "Blood Supply"],
+  // Process the data
+  const [chartData, setChartData] = useState<any[]>([
+    ["Month", "Blood Requirements"],
     ...months
       .split(",")
       .map(Number)
       .map((data, index) => [index + 1, data]),
-  ];
+  ]);
 
+  //define the options for google chart data
   const options = {
-    title: "Supply Prediction",
+    title: "Demand Prediction",
     hAxis: { title: "Month" },
     vAxis: { title: "Quantity of blood" },
     legend: "none",
   };
+
+  useEffect(() => {
+    if (prediction) {
+      setChartData([
+        ["Month", "Blood Requirements"],
+        ...months
+          .split(",")
+          .map(Number)
+          .map((data, index) => [index + 1, data]),
+        [months.split(",").length + 1, parseFloat(prediction)],
+      ]);
+    }
+  }, [prediction]);
+
   return (
     <>
-      {" "}
       <form
         className="space-y-4 max-w-sm mx-auto p-4 border rounded"
         onSubmit={handleSubmit}
@@ -658,7 +691,7 @@ const SupplyPredictionForm = () => {
         </button>
       </form>
       {isSubmitting && !prediction ? <p>Loading........</p> : ""}
-      {months && (
+      {prediction && (
         <>
           <GoogleChart
             chartType="LineChart"
@@ -667,56 +700,67 @@ const SupplyPredictionForm = () => {
             data={chartData}
             options={options}
           />
+
           {prediction && (
-            <div key={months.length}>Predicted Supply: {prediction}</div>
-          )}
-          {/* <Button
-            onClick={async () => {
-              const requestData = {
-                recipientName: "John Doe",
-                organizationName: "City Blood Bank",
-                bloodGroup: "B+",
-                location: "123 Main Street, New York",
-                contactDetails: "+1-555-123-4567",
-                recipientEmail: ["prashantmanandhar2002@gmail.com"],
-              };
+            <>
+              <div key={months.length}>Predicted Demand: {prediction}</div>
+              <Button
+                onClick={async () => {
+                  const requestData = {
+                    recipientName: "John Doe",
+                    organizationName: "City Blood Bank",
+                    bloodGroup: "B+",
+                    location: "123 Main Street, New York",
+                    contactDetails: "+1-555-123-4567",
+                    recipientEmail: ["prashantmanandhar2002@gmail.com"],
+                  };
 
-              try {
-                const response = await fetch(
-                  "http://localhost:3000/api/send-blood-inventory-email",
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(requestData),
+                  try {
+                    const response = await fetch(
+                      "http://localhost:3000/api/send-blood-inventory-email",
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(requestData),
+                      }
+                    );
+
+                    const data = await response.json();
+                    if (response.ok) {
+                      console.log("Email sent successfully!");
+                      router.push("/demandmap");
+                    } else {
+                      console.log(`Error: ${data.message}`);
+                    }
+                  } catch (error) {
+                    if (error instanceof Error) {
+                      console.log(`Request failed: ${error.message}`);
+                    } else {
+                      console.log("Request failed with an unknown error");
+                    }
                   }
-                );
-
-                const data = await response.json();
-                if (response.ok) {
-                  console.log("Email sent successfully!");
-                } else {
-                  console.log(`Error: ${data.message}`);
-                }
-              } catch (error) {
-                if (error instanceof Error) {
-                  console.log(`Request failed: ${error.message}`);
-                } else {
-                  console.log("Request failed with an unknown error");
-                }
-              }
-            }}
-          >
-            Send Request Mail to {Math.ceil(prediction * 2)}{" "}
-          </Button> */}
+                }}
+              >
+                {prediction !== null && prediction !== undefined && (
+                  <>
+                    Send Request Mail to {Math.ceil(parseFloat(prediction) * 2)}{" "}
+                    person
+                  </>
+                )}
+              </Button>
+            </>
+          )}
         </>
       )}
     </>
   );
 };
+
 // const SupplyPredictionForm = () => {
-//   const [prediction, setPrediction] = useState<number>(0); // Change to string
+//   const [prediction, setPrediction] = useState<number | null>(); // Change to string
+//   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 //   const [years, setYears] = useState<string>(""); // Change to string
 //   const [months, setMonths] = useState<string>(""); // Change to string
 //   const [yearsError, setYearsError] = useState<string>("");
@@ -748,6 +792,7 @@ const SupplyPredictionForm = () => {
 //   async function handleSubmit(
 //     event: FormEvent<HTMLFormElement>
 //   ): Promise<void> {
+//     setIsSubmitting(true);
 //     event.preventDefault();
 //     console.log("Years:", years.split(","));
 //     console.log("Months:", months.split(","));
@@ -782,8 +827,22 @@ const SupplyPredictionForm = () => {
 
 //   useEffect(() => {
 //     console.log({ prediction });
-//   }, [prediction]);
+//   }, [prediction, months]);
 
+//   const chartData = [
+//     ["Month", "Blood Supply"],
+//     ...months
+//       .split(",")
+//       .map(Number)
+//       .map((data, index) => [index + 1, data]),
+//   ];
+
+//   const options = {
+//     title: "Supply Prediction",
+//     hAxis: { title: "Month" },
+//     vAxis: { title: "Quantity of blood" },
+//     legend: "none",
+//   };
 //   return (
 //     <>
 //       {" "}
@@ -840,7 +899,61 @@ const SupplyPredictionForm = () => {
 //           Submit
 //         </button>
 //       </form>
-//       {prediction}
+//       {isSubmitting && !prediction ? <p>Loading........</p> : ""}
+//       {months && (
+//         <>
+//           <GoogleChart
+//             chartType="LineChart"
+//             width="100%"
+//             height="400px"
+//             data={chartData}
+//             options={options}
+//           />
+//           {prediction && (
+//             <div key={months.length}>Predicted Supply: {prediction}</div>
+//           )}
+//           {/* <Button
+//             onClick={async () => {
+//               const requestData = {
+//                 recipientName: "John Doe",
+//                 organizationName: "City Blood Bank",
+//                 bloodGroup: "B+",
+//                 location: "123 Main Street, New York",
+//                 contactDetails: "+1-555-123-4567",
+//                 recipientEmail: ["prashantmanandhar2002@gmail.com"],
+//               };
+
+//               try {
+//                 const response = await fetch(
+//                   "http://localhost:3000/api/send-blood-inventory-email",
+//                   {
+//                     method: "POST",
+//                     headers: {
+//                       "Content-Type": "application/json",
+//                     },
+//                     body: JSON.stringify(requestData),
+//                   }
+//                 );
+
+//                 const data = await response.json();
+//                 if (response.ok) {
+//                   console.log("Email sent successfully!");
+//                 } else {
+//                   console.log(`Error: ${data.message}`);
+//                 }
+//               } catch (error) {
+//                 if (error instanceof Error) {
+//                   console.log(`Request failed: ${error.message}`);
+//                 } else {
+//                   console.log("Request failed with an unknown error");
+//                 }
+//               }
+//             }}
+//           >
+//             Send Request Mail to {Math.ceil(prediction * 2)}{" "}
+//           </Button> */}
+//         </>
+//       )}
 //     </>
 //   );
 // };
