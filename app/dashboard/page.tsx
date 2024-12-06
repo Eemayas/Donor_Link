@@ -290,14 +290,14 @@ export default function Dashboard() {
           {data && <Pie data={data} options={pieChartOptions} />}
         </div>
 
-        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px] w-fit flex flex-col gap-6">
+        <div className="bg-white p-4 shadow-md rounded-md  min-w-[500px] w-fit flex flex-col gap-6">
           <Highlight className="text-black dark:text-white w-full mx-auto text-center ">
             Blood Demand Prediction
           </Highlight>
           <DemandPredictionForm />
         </div>
 
-        <div className="bg-white p-4 shadow-md rounded-md max-h-[500px] min-w-[500px] flex flex-col gap-6">
+        <div className="bg-white p-4 shadow-md rounded-md  min-w-[500px] flex flex-col gap-6">
           <Highlight className="text-black dark:text-white w-full mx-auto text-center ">
             Blood Supply Prediction
           </Highlight>
@@ -380,15 +380,15 @@ const DemandPredictionForm = () => {
   }, [prediction, months]);
 
   // Process the data
-  const chartData =[["Month","Blood Requirements"] ,...months
-  .split(",")
-  .map(Number)
-  .map((data, index) => ([
-    index + 1,
-    data,
-  ]))];
+  const chartData = [
+    ["Month", "Blood Requirements"],
+    ...months
+      .split(",")
+      .map(Number)
+      .map((data, index) => [index + 1, data]),
+  ];
 
-//define the options for google chart data
+  //define the options for google chart data
   const options = {
     title: "Demand Prediction",
     hAxis: { title: "Month" },
@@ -454,56 +454,62 @@ const DemandPredictionForm = () => {
       {isSubmitting && !prediction ? <p>Loading........</p> : ""}
       {months && (
         <>
-          < GoogleChart
-  chartType="LineChart"
-  width="100%"
-  height="400px"
-  data={chartData}
-  options={options}
-/>
+          <GoogleChart
+            chartType="LineChart"
+            width="100%"
+            height="400px"
+            data={chartData}
+            options={options}
+          />
 
-          <div key={months.length}>Predicted Demand: {prediction}</div>
-          <Button
-            onClick={async () => {
-              const requestData = {
-                recipientName: "John Doe",
-                organizationName: "City Blood Bank",
-                bloodGroup: "B+",
-                location: "123 Main Street, New York",
-                contactDetails: "+1-555-123-4567",
-                recipientEmail: ["prashantmanandhar2002@gmail.com"],
-              };
+          {prediction && (
+            <>
+              <div key={months.length}>Predicted Demand: {prediction}</div>
+              <Button
+                onClick={async () => {
+                  const requestData = {
+                    recipientName: "John Doe",
+                    organizationName: "City Blood Bank",
+                    bloodGroup: "B+",
+                    location: "123 Main Street, New York",
+                    contactDetails: "+1-555-123-4567",
+                    recipientEmail: ["prashantmanandhar2002@gmail.com"],
+                  };
 
-              try {
-                const response = await fetch(
-                  "http://localhost:3000/api/send-blood-inventory-email",
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(requestData),
+                  try {
+                    const response = await fetch(
+                      "http://localhost:3000/api/send-blood-inventory-email",
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(requestData),
+                      }
+                    );
+
+                    const data = await response.json();
+                    if (response.ok) {
+                      console.log("Email sent successfully!");
+                      router.push("/demandmap");
+                    } else {
+                      console.log(`Error: ${data.message}`);
+                    }
+                  } catch (error) {
+                    if (error instanceof Error) {
+                      console.log(`Request failed: ${error.message}`);
+                    } else {
+                      console.log("Request failed with an unknown error");
+                    }
                   }
-                );
-
-                const data = await response.json();
-                if (response.ok) {
-                  console.log("Email sent successfully!");
-                  router.push("/demandmap")
-                } else {
-                  console.log(`Error: ${data.message}`);
-                }
-              } catch (error) {
-                if (error instanceof Error) {
-                  console.log(`Request failed: ${error.message}`);
-                } else {
-                  console.log("Request failed with an unknown error");
-                }
-              }
-            }}
-          >
-            Send Request Mail to {Math.ceil(prediction * 2)}{" "}
-          </Button>
+                }}
+              >
+                {prediction !== null && prediction !== undefined && (
+                  <>Send Request Mail to {Math.ceil(prediction * 2)} person</>
+                )}
+              </Button>
+            </>
+          )}
         </>
       )}
     </>
@@ -581,6 +587,20 @@ const SupplyPredictionForm = () => {
     console.log({ prediction });
   }, [prediction, months]);
 
+  const chartData = [
+    ["Month", "Blood Supply"],
+    ...months
+      .split(",")
+      .map(Number)
+      .map((data, index) => [index + 1, data]),
+  ];
+
+  const options = {
+    title: "Supply Prediction",
+    hAxis: { title: "Month" },
+    vAxis: { title: "Quantity of blood" },
+    legend: "none",
+  };
   return (
     <>
       {" "}
@@ -640,14 +660,16 @@ const SupplyPredictionForm = () => {
       {isSubmitting && !prediction ? <p>Loading........</p> : ""}
       {months && (
         <>
-          {`[${months
-            .split(",")
-            .map(Number)
-            .map((data, number) => {
-              return `${data}`;
-            })}
-          ]`}
-          <div key={months.length}>Predicted Supply: {prediction}</div>
+          <GoogleChart
+            chartType="LineChart"
+            width="100%"
+            height="400px"
+            data={chartData}
+            options={options}
+          />
+          {prediction && (
+            <div key={months.length}>Predicted Supply: {prediction}</div>
+          )}
           {/* <Button
             onClick={async () => {
               const requestData = {

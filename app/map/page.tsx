@@ -3,15 +3,12 @@
 "use client";
 
 import React, { useState, ChangeEvent } from "react";
-
+import { HeroHighlight, Highlight } from "@/components/ui/hero-highlight";
 import Map from "./components/Map"; // Ensure you have a Map component in the same directory
 // Destructure the query parameter
 const LocationPage: React.FC = () => {
-
-
-
   const [searchQuery, setSearchQuery] = useState<string>(""); // State to store the search query
- 
+
   // Handle the search input change (type ChangeEvent<HTMLInputElement>)
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setSearchQuery(e.target.value);
@@ -25,7 +22,11 @@ const LocationPage: React.FC = () => {
   return (
     <div className="pt-32">
       <div className="flex justify-between items-center my-4 px-4">
-        <h1 className="text-center text-xl font-semibold">Blood Donor Locations</h1>
+        <h1 className="text-xl px-4 md:text-3xl lg:text-4xl font-bold text-neutral-700 dark:text-white max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto flex flex-col items-center">
+          <Highlight className="text-black dark:text-white w-fit ">
+            Blood Donor Locations
+          </Highlight>
+        </h1>
 
         <div className="flex items-center space-x-2">
           <input
@@ -44,7 +45,7 @@ const LocationPage: React.FC = () => {
         </div>
       </div>
       {/* Pass searchQuery to Map component as a prop */}
-      <Map searchQuery={searchQuery}/>
+      <Map searchQuery={searchQuery} />
     </div>
   );
 };
