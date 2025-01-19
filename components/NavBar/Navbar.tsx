@@ -15,7 +15,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CloseIcons, MenuIcons } from "../social-icons/icons";
-import ThemeSwitch from "./components/ThemeSwitch";
 import { styles } from "@/app/style";
 
 export const navLinks = [
@@ -71,7 +70,6 @@ const Navbar = () => {
             loading="eager"
             priority
           />
-         
         </Link>
         <div className="flex gap-4 lg:gap-6">
           <ul className="hidden list-none flex-row items-center gap-4 text-sm md:flex lg:gap-6">

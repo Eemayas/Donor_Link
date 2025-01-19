@@ -704,53 +704,7 @@ const SupplyPredictionForm = () => {
           {prediction && (
             <>
               <div key={months.length}>Predicted Demand: {prediction}</div>
-              <Button
-                onClick={async () => {
-                  const requestData = {
-                    recipientName: "John Doe",
-                    organizationName: "City Blood Bank",
-                    bloodGroup: "B+",
-                    location: "123 Main Street, New York",
-                    contactDetails: "+1-555-123-4567",
-                    recipientEmail: ["prashantmanandhar2002@gmail.com"],
-                  };
-
-                  try {
-                    const response = await fetch(
-                      "http://localhost:3000/api/send-blood-inventory-email",
-                      {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(requestData),
-                      }
-                    );
-
-                    const data = await response.json();
-                    if (response.ok) {
-                      console.log("Email sent successfully!");
-                      router.push("/demandmap");
-                    } else {
-                      console.log(`Error: ${data.message}`);
-                    }
-                  } catch (error) {
-                    if (error instanceof Error) {
-                      console.log(`Request failed: ${error.message}`);
-                    } else {
-                      console.log("Request failed with an unknown error");
-                    }
-                  }
-                }}
-              >
-                {prediction !== null && prediction !== undefined && (
-                  <>
-                    Send Request Mail to {Math.ceil(parseFloat(prediction) * 2)}{" "}
-                    person
-                  </>
-                )}
-              </Button>
-            </>
+0            </>
           )}
         </>
       )}

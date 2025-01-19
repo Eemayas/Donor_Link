@@ -6,7 +6,7 @@ import "leaflet/dist/leaflet.css";
 import L, { LatLngExpression } from "leaflet";
 import { userData } from "../constant.js";
 import { Droplet, Mail, MapPin, User } from "lucide-react";
-import { Button } from "@/components/ui/button.tsx";
+import { Button } from "@/components/ui/button";
 
 // Fix Leaflet's default marker icon issue
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -58,7 +58,7 @@ const cityCoordinates: Record<string, LatLngExpression> = {
   Bhadrapur: [26.5453, 88.0938],
   Panauti: [27.5829, 85.5097],
   Damauli: [27.9223, 84.1468],
-  Kawasoti: [27.6486, 84.1330],
+  Kawasoti: [27.6486, 84.133],
   Banepa: [27.6332, 85.5277],
 };
 
@@ -80,14 +80,13 @@ const sendEmail = (): void => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(requestBody),
-
   })
-    .then((response) =>{
+    .then((response) => {
       if (response.ok) {
-              alert("Email sent successfully!");
-            } else {
-              alert("Failed to send email.");
-            }
+        alert("Email sent successfully!");
+      } else {
+        alert("Failed to send email.");
+      }
     })
     .then((data) => console.log(data))
     .catch((error) => console.error("Error:", error));
@@ -114,10 +113,12 @@ const sendEmail = (): void => {
   //   });
 };
 
-const Map: React.FC<MapProps> = ({searchQuery}) => {
-  console.log(searchQuery)
+const Map: React.FC<MapProps> = ({ searchQuery }) => {
+  console.log(searchQuery);
   const [data, setData] = useState<Person[]>(userData);
-  let [userLocation, setUserLocation] = useState<LatLngExpression | null>([0, 0,]);
+  let [userLocation, setUserLocation] = useState<LatLngExpression | null>([
+    0, 0,
+  ]);
 
   // Fetch data from the public folder
   useEffect(() => {
@@ -144,7 +145,6 @@ const Map: React.FC<MapProps> = ({searchQuery}) => {
           console.error("Error getting location:", error);
         }
       );
-      
     } else {
       console.error("Geolocation is not supported by this browser.");
     }
@@ -173,7 +173,6 @@ const Map: React.FC<MapProps> = ({searchQuery}) => {
     loc1: LatLngExpression,
     loc2: LatLngExpression
   ): number => {
-    
     const latLng1 = L.latLng(loc1);
     const latLng2 = L.latLng(loc2);
     return latLng1.distanceTo(latLng2); // Returns distance in meters
@@ -182,10 +181,9 @@ const Map: React.FC<MapProps> = ({searchQuery}) => {
   // Filter the data to only show locations within 60 km (60000 meters) of the user location
   const filteredData = userLocation
     ? data.filter((person) => {
-
         const personCoordinates = cityCoordinates[person.location];
-  
-         if (personCoordinates && userLocation ) {
+
+        if (personCoordinates && userLocation) {
           const distance = getDistance(userLocation, personCoordinates);
           return distance <= 200000; // Only include data within 60 km
         }
@@ -221,9 +219,8 @@ const Map: React.FC<MapProps> = ({searchQuery}) => {
       {/* Add markers for filtered locations */}
       {filteredData.map((person, index) => {
         const position: [number, number] = [
-          (cityCoordinates[person.location] as [number, number])[0] 
-             , 
-          (cityCoordinates[person.location] as [number, number])[1] 
+          (cityCoordinates[person.location] as [number, number])[0],
+          (cityCoordinates[person.location] as [number, number])[1],
         ];
         console.log(position);
         return (
@@ -247,12 +244,11 @@ const Map: React.FC<MapProps> = ({searchQuery}) => {
                     <span>{person.location}</span>
                   </div>
                   <Button onClick={sendEmail}>
-                  <div className="flex items-center gap-1" >
+                    <div className="flex items-center gap-1">
+                      <Mail className="w-4 h-4" />
 
-                    <Mail className="w-4 h-4" />
-                    
-                    <span>{person.email}</span>
-                  </div>
+                      <span>{person.email}</span>
+                    </div>
                   </Button>
                 </Card>
               </Popup>
