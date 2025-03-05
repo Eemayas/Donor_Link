@@ -4,7 +4,12 @@
 
 import React, { useState, ChangeEvent } from "react";
 import { HeroHighlight, Highlight } from "@/components/ui/hero-highlight";
-import Map from "./components/Map"; // Ensure you have a Map component in the same directory
+import dynamic from "next/dynamic";
+
+const Map = dynamic(() => import("./components/Map"), {
+  ssr: false,
+});
+
 // Destructure the query parameter
 const LocationPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>(""); // State to store the search query
